@@ -25,6 +25,8 @@ function setup() {
   textFont("sans-serif");
   textSize(14);
 
+  song.loop();
+
   stepSlider = createSlider(0.5, 3, 1, 0.1);
   stepSlider.position(width - 200, 40);
 
