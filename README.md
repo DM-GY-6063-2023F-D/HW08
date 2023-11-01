@@ -2,7 +2,11 @@
 
 ### Neon Mondrian:
 
+Defined a function to determine whether two colors are similar by checking if difference between values for all 3 channels are below a threshold. This threshold is determined by a html slider element dynamically.
 
+Code replaces all colors, including B&W. For one of the colors, I'm using modulus and division to draw a striped pattern.
+
+And for another color, the replacement color is selected via a html color picker element.
 
 ### Sound Visualization:
 
