@@ -9,8 +9,6 @@ let mColorPicker;
 let MONDRIAN_RED;
 let MONDRIAN_BLUE;
 let MONDRIAN_YELLOW;
-let MONDRIAN_BLACK;
-let MONDRIAN_WHITE;
 
 function preload() {
   img = loadImage("./red-yellow-blue-black.jpg");
@@ -18,16 +16,16 @@ function preload() {
 }
 
 function isSimilar(colorA, redB, greenB, blueB) {
-  let similarR = abs(red(colorA) - redB) < similarValue;
-  let similarG = abs(green(colorA) - greenB) < similarValue;
-  let similarB = abs(blue(colorA) - blueB) < similarValue;
+  let similarR = abs(colorA.r - redB) < similarValue;
+  let similarG = abs(colorA.g - greenB) < similarValue;
+  let similarB = abs(colorA.b - blueB) < similarValue;
   return similarR && similarG && similarB;
 }
 
 function updateImage() {
   similarValue = similarSlider.value();
   let pickerColor = mColorPicker.color();
-  let newBlue = {
+  let newYellow = {
     r: red(pickerColor),
     g: green(pickerColor),
     b: blue(pickerColor),
@@ -43,26 +41,20 @@ function updateImage() {
       let bVal = oImg.pixels[pixelIndex + 2];
 
       if (isSimilar(MONDRIAN_BLUE, rVal, gVal, bVal)) {
-        img.pixels[pixelIndex + 0] = newBlue.r;
-        img.pixels[pixelIndex + 1] = newBlue.g;
-        img.pixels[pixelIndex + 2] = newBlue.b;
+        let ix = floor(x / 20);
+        let iy = floor(y / 20);
+        let pv = ix % 2 != iy % 2 ? 255 : 0;
+        img.pixels[pixelIndex + 0] = pv;
+        img.pixels[pixelIndex + 1] = 255 - pv;
+        img.pixels[pixelIndex + 2] = 255;
       } else if (isSimilar(MONDRIAN_RED, rVal, gVal, bVal)) {
         img.pixels[pixelIndex + 0] = 255;
         img.pixels[pixelIndex + 1] = 0;
         img.pixels[pixelIndex + 2] = 255;
       } else if (isSimilar(MONDRIAN_YELLOW, rVal, gVal, bVal)) {
-        img.pixels[pixelIndex + 0] = 0;
-        img.pixels[pixelIndex + 1] = 255;
-        img.pixels[pixelIndex + 2] = 0;
-      } else if (isSimilar(MONDRIAN_BLACK, rVal, gVal, bVal)) {
-        img.pixels[pixelIndex + 0] = 255;
-        img.pixels[pixelIndex + 1] = 255;
-        img.pixels[pixelIndex + 2] = 0;
-      } else if (isSimilar(MONDRIAN_WHITE, rVal, gVal, bVal)) {
-        let pv = (x / 20) % 2 < 1 ? 255 : 0;
-        img.pixels[pixelIndex + 0] = pv;
-        img.pixels[pixelIndex + 1] = 255 - pv;
-        img.pixels[pixelIndex + 2] = 255 - pv;
+        img.pixels[pixelIndex + 0] = newYellow.r;
+        img.pixels[pixelIndex + 1] = newYellow.g;
+        img.pixels[pixelIndex + 2] = newYellow.b;
       } else {
         img.pixels[pixelIndex + 0] = oImg.pixels[pixelIndex + 0];
         img.pixels[pixelIndex + 1] = oImg.pixels[pixelIndex + 1];
@@ -77,22 +69,20 @@ function updateImage() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  MONDRIAN_RED = color(220, 64, 40);
-  MONDRIAN_BLUE = color(1, 59, 105);
-  MONDRIAN_YELLOW = color(239, 193, 81);
-  MONDRIAN_BLACK = color(36, 37, 28);
-  MONDRIAN_WHITE = color(212, 213, 211);
+  MONDRIAN_RED = { r: 220, g: 64, b: 40 };
+  MONDRIAN_BLUE = { r: 1, g: 59, b: 105 };
+  MONDRIAN_YELLOW = { r: 239, g: 193, b: 81 };
 
-  img.resize(0, height / 2);
-  oImg.resize(0, height / 2);
+  img.resize(0, height);
+  oImg.resize(0, height);
   oImg.loadPixels();
 
   similarSlider = createSlider(5, 64, 5);
-  similarSlider.position(2 * oImg.width + 10, 25);
+  similarSlider.position(oImg.width + 10, 25);
   similarSlider.changed(updateImage);
 
-  mColorPicker = createColorPicker(color(0, 30, 255));
-  mColorPicker.position(2 * oImg.width + 10, 80);
+  mColorPicker = createColorPicker(color(255, 255, 0));
+  mColorPicker.position(oImg.width + 10, 80);
   mColorPicker.style("width", "120px");
   mColorPicker.changed(updateImage);
 
@@ -105,13 +95,13 @@ function drawLabels() {
   textSize(20);
   textFont("monospace");
 
-  text("threshold:", 2 * oImg.width + 10, 20);
-  text("new blue:", 2 * oImg.width + 10, 75);
+  text("threshold:", oImg.width + 10, 20);
+  text("new color:", oImg.width + 10, 75);
   pop();
 }
 
 function draw() {
   background(0);
-  image(img, 0, 0, 2 * img.width, 2 * img.height);
+  image(img, 0, 0);
   drawLabels();
 }
